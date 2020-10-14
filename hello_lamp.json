@@ -16,16 +16,27 @@
               "AWS::CloudFormation::Init" : {
                   "configSets" : {
                       "Install" : [ "Install" ]
-                  }
-              },
+                  },
 
-              "Install" : {
-                  "files" : {
-                      "/home/ubuntu/hello.txt" : {
-                          "content" : { "Fn::Join" : ["", ["hello there!"]]},
-                          "mode" : "000644",
-                          "owner" : "ubuntu",
-                          "group" : "ubuntu"
+                  "Install" : {
+                      "files" : {
+                          "/home/ubuntu/hello.txt" : {
+                              "content" : { "Fn::Join" : ["", ["hello there!"]]},
+                              "mode" : "000644",
+                              "owner" : "ubuntu",
+                              "group" : "ubuntu"
+                          },
+                          
+                          "/home/ubuntu/hithere.txt" : {
+                              "content" : "Hi there!"
+                          },
+
+                          "/home/ubuntu/hellodude.txt" : {
+                              "content" : "hello dude",
+                              "mode" : "000644",
+                              "owner" : "ubuntu",
+                              "group" : "ubuntu"
+                          }
                       }
                   }
               }
@@ -50,6 +61,7 @@
                   "wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz\n",
                   "echo 'got cfn-bootstrap'\n",
                   "python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz\n",
+                  "ln -s /root/aws-cfn-bootstrap-latest/init/ubuntu/cfn-hup /etc/init.d/cfn-hup\n",
                   "echo 'installed cfn-bootstrap'\n",
                   "/opt/aws/bin/cfn-init -v ",
                   " --stack ", { "Ref" : "AWS::StackName" },
