@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description" : "AWS CloudFormation sample template LAMP_Single_Instance: Create a LAMP stack using a single EC2 instance and a local MySQL database for storage. This template demonstrates using the AWS CloudFormation bootstrap scripts to install the packages and files necessary to deploy the Apache web server, PHP, and MySQL at instance launch time. **WARNING** This template creates an Amazon EC2 instance. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Description" : "lamp",
     "Parameters" : {
         "KeyName" : {
             "Description" : "Key pair name",
@@ -19,9 +19,14 @@
                   }
               },
 
-              "files" : {
-                  "/home/ubuntu/hello.txt" : {
-                      "content" : { "Fn::Join" : ["", ["hello there!"]]}
+              "Install" : {
+                  "files" : {
+                      "/home/ubuntu/hello.txt" : {
+                          "content" : { "Fn::Join" : ["", ["hello there!"]]},
+                          "mode" : "000644",
+                          "owner" : "ubuntu",
+                          "group" : "ubuntu"
+                      }
                   }
               }
           },
@@ -36,8 +41,22 @@
               ],
               "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                   "#!/bin/bash -xe\n",
+                  "echo 'Beginning script'\n",
                   "apt-get update -y\n",
-                  "apt-get install -y python3-pip"
+                  "echo 'Updated...'\n",
+                  "echo 'Not upgrading.......'\n",
+                  "apt-get install -y python3-pip\n",
+                  "echo 'Installed pip'\n",
+                  "wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz\n",
+                  "echo 'got cfn-bootstrap'\n",
+                  "python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz\n",
+                  "echo 'installed cfn-bootstrap'\n",
+                  "/opt/aws/bin/cfn-init -v ",
+                  " --stack ", { "Ref" : "AWS::StackName" },
+                  " --resource WebServer ",
+                  " --configsets Install ",
+                  " --region ", { "Ref" : "AWS::Region" }, "\n",
+                  "echo 'ran cfn-init'\n"
               ]] } }
             }
         }
