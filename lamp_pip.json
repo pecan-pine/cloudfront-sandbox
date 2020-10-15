@@ -19,6 +19,11 @@
                   },
 
                   "Install" : {
+                      "packages" : {
+                          "apt" : {
+                              "nginx" : []
+                          }
+                      },
                       "files" : {
                           "/home/ubuntu/hello.txt" : {
                               "content" : "Hello",
@@ -53,13 +58,19 @@
               "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                   "#!/bin/bash -xe\n",
                   "apt-get update -y\n",
+                  "touch /etc/apt/sources.list.d/nginx.list\n",
+                  "echo 'deb https://nginx.org/packages/ubuntu/ focal nginx\n",
+                      "deb-src https://nginx.org/packages/ubuntu/ focal nginx'",
+                      " >> /etc/apt/sources.list.d/nginx.list\n",
+                  "curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -\n",
+                  "apt-get update -y\n",
                   "apt-get install -y python3-pip\n",
                   "pip3 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz\n",
                   "/usr/local/bin/cfn-init -v ",
-                  " --stack ", { "Ref" : "AWS::StackName" },
-                  " --resource WebServer ",
-                  " --configsets Install ",
-                  " --region ", { "Ref" : "AWS::Region" }, "\n"
+                      " --stack ", { "Ref" : "AWS::StackName" },
+                      " --resource WebServer ",
+                      " --configsets Install ",
+                      " --region ", { "Ref" : "AWS::Region" }, "\n"
               ]] } }
             }
         }
