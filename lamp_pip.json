@@ -36,6 +36,20 @@
                               "content" : "Hi there!"
                           },
 
+                          "/etc/nginx/conf.d/server0.conf" : {
+                              "content" : { "Fn::Join" : ["", [ 
+                                "server {\n",
+                                "\tlisten 80;\n",
+                                "\tserver_name testserver;\n",
+                                "\taccess_log /var/log/nginx/testserver.log;\n\n",
+                                "\tlocation / {\n",
+                                "\t\tproxy_pass http://127.0.0.1:8000;\n",
+                                "\t\tproxy_set_header Host $host;\n",
+                                "\t\tproxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n",
+                                "\t}\n}\n"
+                              ]]}
+                          },
+
                           "/home/ubuntu/hellodude.txt" : {
                               "content" : "hello dude",
                               "mode" : "000644",
@@ -71,6 +85,7 @@
                       " --resource WebServer ",
                       " --configsets Install ",
                       " --region ", { "Ref" : "AWS::Region" }, "\n",
+                  "mv /etc/nginx/default.conf /etc/nginx/default.conf.bak\n",
                   "sudo nginx\n"
               ]] } }
             }
