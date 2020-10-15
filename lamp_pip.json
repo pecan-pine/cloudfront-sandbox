@@ -15,7 +15,7 @@
               
               "AWS::CloudFormation::Init" : {
                   "configSets" : {
-                      "Install" : [ "Install" ]
+                      "Install" : [ "Install", "Configure" ]
                   },
 
                   "Install" : {
@@ -57,6 +57,14 @@
                               "group" : "ubuntu"
                           }
                       }
+                  },
+                  
+                  "Configure" : {
+                      "commands" : {
+                          "remove_old_nginx_conf" : {
+                              "command" : "mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak"
+                          }
+                      }
                   }
               }
           },
@@ -85,7 +93,6 @@
                       " --resource WebServer ",
                       " --configsets Install ",
                       " --region ", { "Ref" : "AWS::Region" }, "\n",
-                  "mv /etc/nginx/default.conf /etc/nginx/default.conf.bak\n",
                   "sudo nginx\n"
               ]] } }
             }
