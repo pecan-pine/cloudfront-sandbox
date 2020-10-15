@@ -50,6 +50,16 @@
                               ]]}
                           },
 
+                          "/home/ubuntu/www/app.py" : {
+                              "content" : { "Fn::Join" : ["", [
+                                  "from flask import Flask\n\n",
+                                  "app = Flask(__name__)\n\n",
+                                  "@app.route('/')\n",
+                                  "def hello_world():\n",
+                                  "\treturn \"Hello, there!\"\n"
+                              ]] }
+                          },
+
                           "/home/ubuntu/hellodude.txt" : {
                               "content" : "hello dude",
                               "mode" : "000644",
@@ -88,12 +98,17 @@
                   "apt-get update -y\n",
                   "apt-get install -y python3-pip\n",
                   "pip3 install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz\n",
+                  "mkdir /home/ubuntu/www\n",
                   "/usr/local/bin/cfn-init -v ",
                       " --stack ", { "Ref" : "AWS::StackName" },
                       " --resource WebServer ",
                       " --configsets Install ",
                       " --region ", { "Ref" : "AWS::Region" }, "\n",
-                  "sudo nginx\n"
+                  "sudo nginx\n",
+                  "pip3 install Flask\n",
+                  "pip3 install gunicorn\n",
+                  "cd /home/ubuntu/www\n",
+                  "gunicorn -w 4 app:app\n"
               ]] } }
             }
         }
